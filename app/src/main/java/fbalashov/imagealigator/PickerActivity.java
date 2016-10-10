@@ -1,5 +1,6 @@
 package fbalashov.imagealigator;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,6 +17,8 @@ public class PickerActivity extends AppCompatActivity {
     button.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        Intent newIntent = new Intent(PickerActivity.this, DetailsActivity.class);
+        startActivity(newIntent);
         Toast.makeText(PickerActivity.this, "It's a trap!", Toast.LENGTH_SHORT).show();
       }
     });
