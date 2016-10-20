@@ -1,10 +1,12 @@
 package fbalashov.imagealigator;
 
-import android.app.Application;
+import java.io.IOException;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.IOException;
+import android.app.Application;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -41,7 +43,15 @@ public class MemeClient {
 
             @Override public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-                handler.returnMeme(String.valueOf(response.code()));
+                try {
+                    JSONObject object = new JSONObject(response.body().string());
+                    JSONArray array = object.getJSONArray("data");
+                    final JSONObject memeData = array.getJSONObject(Integer.parseInt(imageId));
+                    String link = memeData.getString("link");
+                    handler.returnMeme(link);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
