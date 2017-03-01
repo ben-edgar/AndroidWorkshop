@@ -5,6 +5,12 @@ import android.os.Handler;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -59,12 +65,22 @@ public class MemeClient {
         if (!response.isSuccessful()) {
           throw new IOException("Unexpected response code: " + response);
         }
-        handler.post(new Runnable() {
-          @Override
-          public void run() {
-            Toast.makeText(activity, "Response was successful", Toast.LENGTH_SHORT).show();
-          }
-        });
+
+        try {
+          JSONObject object = new JSONObject(response.body().string());
+          JSONArray array = object.getJSONArray("data");
+          final JSONObject memeData = array.getJSONObject(Integer.parseInt(imageId));
+          final String link = memeData.getString("link");
+          handler.post(new Runnable() {
+            @Override
+            public void run() {
+              Toast.makeText(activity, "Response was successful", Toast.LENGTH_SHORT).show();
+              Picasso.with(activity).load(link).into(imageView);
+            }
+          });
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
       }
     });
   }
