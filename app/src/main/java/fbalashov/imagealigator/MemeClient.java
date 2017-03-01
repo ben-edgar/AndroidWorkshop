@@ -34,7 +34,10 @@ public class MemeClient {
    * @param imageView the image view that will hold the meme
    */
   public void displayMeme(final String imageId, final Activity activity, final ImageView imageView) {
-    Request getRequest = new Request.Builder().build();
+    Request getRequest = new Request.Builder()
+        .url(IMGUR_URL)
+        .addHeader("Authorization", "Client-ID " + CLIENT_ID)
+        .build();
 
     client.newCall(getRequest).enqueue(new Callback() {
       Handler handler = new Handler(activity.getMainLooper());
@@ -53,7 +56,15 @@ public class MemeClient {
 
       @Override
       public void onResponse(Call call, Response response) throws IOException {
-
+        if (!response.isSuccessful()) {
+          throw new IOException("Unexpected response code: " + response);
+        }
+        handler.post(new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(activity, "Response was successful", Toast.LENGTH_SHORT).show();
+          }
+        });
       }
     });
   }
